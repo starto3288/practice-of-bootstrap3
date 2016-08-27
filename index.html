@@ -1,10 +1,121 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <title>Practice of Bootstrap3</title>
-</head>
-<body>
-push test
-</body>
+	<head>
+		<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>構造シート</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/jquery.ui.min.css">
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+      body {
+        padding-top: 70px;
+        font-family: "游ゴシック", YuGothic, "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", Verdana, "メイリオ", Meiryo, Osaka, "ＭＳ Ｐゴシック", "MS PGothic", sans-serif;
+        overflow: hidden;
+      }
+      .clickable {
+        cursor: pointer;
+      }
+      .sheet-heading > p {
+        margin-bottom: 0;
+      }
+      .sheet-body {
+        max-height: 450px;
+        padding-top: 0;
+        padding-bottom: 0;
+        overflow-y: scroll;
+      }
+      .topic {
+        margin-bottom: 15px;
+      }
+      .topic-heading-label-area {
+        min-height: 1.5em;
+      }
+      .topic-heading-input-area,
+      .topic-body-input-area {
+        display: none;
+      }
+      .topic-body-input {
+        margin-bottom: 10px;
+      }
+      .accordion-icon {
+        float: right;
+        color: #777;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <script src="js/marked.min.js"></script>
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <p><a class="navbar-brand" href="#">構造シート</a></p>
+        </div>
+      </div>
+    </nav>
+    <div class="container-fluid">
+      <div class="col-xs-12 col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading sheet-heading clickable"><p>テーマ</p></div>
+          <div id="topic-area" class="panel-body sheet-body sortable"></div>
+          <div class="panel-footer clickable add-topic" data-target="#topic-area"><a href="#">トピックを追加</a></div>
+        </div>
+      </div>
+    </div>
+    <script>
+      $(function() {
+        $('.sortable').sortable();
+        $('.sortable').disableSelection();
+      });
+      $(document).ready(function() {
+        $('.add-topic').on('click', function() {
+          var target = $(this).data('target');
+          var length = $(target).children('.panel').length;
+          var id = length + 1;
+          var topic = '<div id="panel-' + id + '" class="panel panel-default topic"><div class="panel-heading topic-heading clickable"><div class="topic-heading-label-area"><span class="topic-heading-label">トピックの概要</span><span class="glyphicon glyphicon-chevron-down accordion-icon" aria-hidden="true" data-toggle="collapse" data-target="#accordion-collapse-' + id + '"></span></div><div class="topic-heading-input-area"><input type="text" class="form-control topic-heading-input" placeholder="トピックの概要を入力してください"></span></div></div><div id="accordion-collapse-' + id + '" class="panel-collapse collapse"><div class="panel-body topic-body"><div class="topic-body-label-area"><span class="topic-body-label">（トピックの本文はまだありません）</span></div><div class="topic-body-input-area"><textarea class="form-control topic-body-input" rows="3" placeholder="トピックの本文を入力してください"></textarea><button class="btn btn-primary topic-body-button">保存</button></div></div></div></div>';
+          $(target).append(topic);
+          // $('#accordion-collapse-' + id).collapse('show');
+          $('#panel-' + id + ' .topic-heading-label-area').hide();
+          $('#panel-' + id + ' .topic-heading-input-area').show();
+          $('#panel-' + id + ' .topic-heading-input-area').children('input').focus();
+          if (length < 1) {
+            $(target).css('padding-top', 15);
+          }
+          $('.topic-heading').dblclick(function() {
+            $(this).children('.topic-heading-label-area').hide();
+            $(this).children('.topic-heading-input-area').show();
+            $(this).children('.topic-heading-input-area').children('input').focus();
+          });
+          $('.topic-heading-input').keypress(function(e) {
+            if (e.which == 13) {
+              $(this).parent().prev().children('.topic-heading-label').html($(this).val());
+              $(this).parent().prev().show();
+              $(this).parent().hide();
+              return false;
+            }
+          });
+          $('.topic-body').dblclick(function() {
+            $(this).children('.topic-body-label-area').hide();
+            $(this).children('.topic-body-input-area').show();
+            $(this).children('.topic-body-input-area').children('textarea').focus();
+          });
+          $('.topic-body-button').click(function() {
+            var before = $(this).prev().val();
+            var after = marked(before);
+            $(this).parent().prev().children('.topic-body-label').html(after);
+            $(this).parent().prev().show();
+            $(this).parent().hide();
+            return false;
+          });
+        });
+      });
+    </script>
+  </body>
 </html>
